@@ -54,7 +54,7 @@
         .then(response => response.json())
         .then(json => console.log(json))
     </script> -->
-    <script>
+    <!-- <script>
         //Patch method
         fetch('https://jsonplaceholder.typicode.com/todos/1',{
             method: 'PATCH',
@@ -64,6 +64,15 @@
             headers:{
                 "Content-type": "application/json; charset=UTF-8"
             }
+        })
+        .then(response => response.json())
+        .then(json => console.log(json))
+    </script> -->
+       <script>
+        //Delete method
+        fetch('https://jsonplaceholder.typicode.com/todos/1',{
+            method: 'DELETE',
+
         })
         .then(response => response.json())
         .then(json => console.log(json))
