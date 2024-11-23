@@ -1,34 +1,115 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport"
+            content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+            integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N"
+            crossorigin="anonymous">
 
-    <title>Application Layer Lab 7</title>
-  </head>
-  <body class="container-fluid"  style="text-align: center;">
-    <h1><b>JavaScript & API's</b></h1>
-    <h2>Your Public IP address is: </h2>
-    <p></p> 
-    <h2>Your Location is: </h2>
-    <p></p>
-    <h2>The Weather there is: </h2>
-    <p></p>
-    <h2>Weather at your Location:</h2>
-    <p></p>
+        <title>Application Layer Lab 7</title>
+        <style>
+        body{
+            padding-top: 2rem;
+            background-color: aqua;
+        }
+        .row{
+    
+            background-color: aliceblue;
+            height: 600px;
+            width: 400px;
+            margin: auto;
+            border-radius: 20px;
+    
+        }
+        img{
+            padding-top: 5px;
+            padding-bottom: 5px;
+            border-radius: 16px;
 
-    <!--Api Script-->
-    <script>
-        
-    </script>
-    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+        }
+    </style>
+    </head>
+    <body class="container-fluid">
+        <div class="row justify-content-md-center">
+            <div class="col-md-auto">
+                <h1><b><u>JavaScript & API's</u></b></h1>
+                <img class="img-fluid"
+                    src="https://media.geeksforgeeks.org/wp-content/uploads/20200418174636/GFG108-1.png">
+                <h4>Your Public IP address is: </h4>
+                <p><span id="public_ip">Fetching...</span></p>
+                <h4>Your Location is: </h4>
+                <p> <span id="location">Fetching...</span></p>
+                <h4>The Weather there is: </h4>
+                <p><span id="W_ip" style="text-transform: uppercase;">Fetching...</span></p>
+                <h4>Weather at your Location:</h4>
+                <p><span id="W_loc" style="text-transform: uppercase;">Fetching...</span></p>
+            </div>
+        </div>
+        <!--Api Script-->
+        <script>
+            // Elements
+            const ipDisplay = document.getElementById('public_ip');
+            const locationDisplay = document.getElementById('location');
+            const weatherIpDisplay = document.getElementById('W_ip');
+            const weatherLocDisplay = document.getElementById('W_loc');
 
-  
-  </body>
+            // APIs
+            const ipApi = 'https://api.ipify.org?format=json';
+            const locationApi = 'https://ipapi.co';
+            const wApi = 'https://api.openweathermap.org/data/2.5/weather';
+            const apiKey = '8b78908afe78ea0fa65342a57cf3fafe'; 
+
+            // Fetch Public IP
+            fetch(ipApi)
+            .then(response => response.json())
+            .then(data => {
+                const publicIp = data.ip;
+                ipDisplay.textContent = publicIp;
+
+                // Fetch Location
+                return fetch(`${locationApi}/${publicIp}/json/`);
+            })
+            .then(response => response.json())
+            .then(locationData => {
+                const { city, region, country_name, latitude, longitude } = locationData;
+                const location = `${city}, ${region}, ${country_name}`;
+                locationDisplay.textContent = location;
+
+                // Fetch Weather (IP-Based)
+                return fetch(`${wApi}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`);
+            })
+            .then(response => response.json())
+            .then(weatherData => {
+                const weather = `${weatherData.weather[0].description}, Temp: ${weatherData.main.temp}K`;
+                weatherIpDisplay.textContent = weather;
+
+                // Fetch Weather (Location-Based)
+                return fetch(`${wApi}?q=${locationDisplay.textContent.split(', ')[0]}&appid=${apiKey}`);
+            })
+            .then(response => response.json())
+            .then(weatherData => {
+                const weather = `${weatherData.weather[0].description}, Temp: ${weatherData.main.temp}K`;
+                weatherLocDisplay.textContent = weather;
+            })
+            .catch(err => {
+                console.error('Error:', err);
+            });
+        </script>
+        <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+        <script
+            src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+            integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+            crossorigin="anonymous"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+            crossorigin="anonymous"></script>
+
+    </body>
 </html>
