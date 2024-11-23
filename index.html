@@ -53,53 +53,54 @@
         </div>
         <!--Api Script-->
         <script>
-            // Elements
-            const ipDisplay = document.getElementById('public_ip');
-            const locationDisplay = document.getElementById('location');
-            const weatherIpDisplay = document.getElementById('W_ip');
-            const weatherLocDisplay = document.getElementById('W_loc');
+          // Elements
+          const ipDisplay = document.getElementById('public_ip');//called by id for the public ip
+          const locationDisplay = document.getElementById('location');//location
+          const weatherIpDisplay = document.getElementById('W_ip');//weather with ip
+          const weatherLocDisplay = document.getElementById('W_loc');//weather with location
 
-            // APIs
-            const ipApi = 'https://api.ipify.org?format=json';
-            const locationApi = 'https://ipapi.co';
-            const wApi = 'https://api.openweathermap.org/data/2.5/weather';
-            const apiKey = '8b78908afe78ea0fa65342a57cf3fafe'; 
+          // APIs
+          const ipApi = 'https://api.ipify.org?format=json';//api for ip 
+          const locationApi = 'https://ipapi.co';//api for location
+          const wApi = 'https://api.openweathermap.org/data/2.5/weather';//api for weather
+          const apiKey = '8b78908afe78ea0fa65342a57cf3fafe'; //api key 
 
-            // Fetch Public IP
-            fetch(ipApi)
-            .then(response => response.json())
-            .then(data => {
-                const publicIp = data.ip;
-                ipDisplay.textContent = publicIp;
+          // Fetch Public IP
+          fetch(ipApi)
+          .then(response => response.json())
+          .then(data => {
+              const publicIp = data.ip;
+              ipDisplay.textContent = publicIp;
 
-                // Fetch Location
-                return fetch(`${locationApi}/${publicIp}/json/`);
+              // Fetch Location
+              return fetch(`${locationApi}/${publicIp}/json/`);
+          })
+          .then(response => response.json())
+          .then(locationData => {
+              const { city, region, country_name, latitude, longitude } = locationData;
+              const location = `${city}, ${region}, ${country_name}`;
+              locationDisplay.textContent = location;
+
+              // Fetch Weather (IP-Based)
+              return fetch(`${wApi}?lat=${latitude}&lon=${longitude}&units=metric&appid=${apiKey}`);
+          })
+          .then(response => response.json())
+          .then(weatherData => {
+              const weather = `${weatherData.weather[0].description}, Temp: ${weatherData.main.temp}°C`;
+              weatherIpDisplay.textContent = weather;
+
+              // Fetch Weather (Location-Based)
+              return fetch(`${wApi}?q=${locationDisplay.textContent.split(', ')[0]}&units=metric&appid=${apiKey}`);
+          })
+          .then(response => response.json())
+          .then(weatherData => {
+              const weather = `${weatherData.weather[0].description}, Temp: ${weatherData.main.temp}°C`;
+              weatherLocDisplay.textContent = weather;
             })
-            .then(response => response.json())
-            .then(locationData => {
-                const { city, region, country_name, latitude, longitude } = locationData;
-                const location = `${city}, ${region}, ${country_name}`;
-                locationDisplay.textContent = location;
+          .catch(err => {
+              console.error('Error:', err);
+          });
 
-                // Fetch Weather (IP-Based)
-                return fetch(`${wApi}?lat=${latitude}&lon=${longitude}&appid=${apiKey}`);
-            })
-            .then(response => response.json())
-            .then(weatherData => {
-                const weather = `${weatherData.weather[0].description}, Temp: ${weatherData.main.temp}K`;
-                weatherIpDisplay.textContent = weather;
-
-                // Fetch Weather (Location-Based)
-                return fetch(`${wApi}?q=${locationDisplay.textContent.split(', ')[0]}&appid=${apiKey}`);
-            })
-            .then(response => response.json())
-            .then(weatherData => {
-                const weather = `${weatherData.weather[0].description}, Temp: ${weatherData.main.temp}K`;
-                weatherLocDisplay.textContent = weather;
-            })
-            .catch(err => {
-                console.error('Error:', err);
-            });
         </script>
         <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
         <script
